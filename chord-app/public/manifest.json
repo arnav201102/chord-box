@@ -1,0 +1,9 @@
+{
+  "name": "Jam Chord App",
+  "short_name": "JamChord",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": []
+}

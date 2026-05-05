@@ -3,40 +3,35 @@
 import { useState } from "react";
 import { chords } from "@/data/chords";
 import { chordNotes } from "@/data/chordNotes";
-import {
-  startAudio,
-  playLiveChord,
-  stopLiveChord,
-} from "@/lib/audio";
+import { startAudio, playChord, stopChord, setInstrument } from "@/lib/audio";
+import InstrumentSelector from "./InstrumentSelector";
+import { InstrumentType } from "@/types";
 
 export default function LiveJam() {
-  const [active, setActive] =
-    useState<string | null>(null);
+  const [active, setActive] = useState<string | null>(null);
+  const [inst, setInst] = useState<InstrumentType>("strings");
+  const [chordType, setChordType] = useState<"english" | "hindi">("english");
 
-  const chooseChord =
-    async (
-      chord: string
-    ) => {
-      await startAudio();
+  const chooseChord = async (chord: string) => {
+    await startAudio();
 
-      const notes =
-        chordNotes[chord];
+    const notes = chordNotes[chord];
 
-      if (!notes) return;
+    if (!notes) return;
 
-      playLiveChord(
-        notes
-      );
+    playChord(notes);
 
-      setActive(chord);
-    };
+    setActive(chord);
+  };
+
+  const currentChords = chords[chordType];
 
   return (
     <div>
       <div className="mb-4 flex gap-3">
         <button
           onClick={() => {
-            stopLiveChord();
+            stopChord();
             setActive(null);
           }}
           className="bg-red-600 px-4 py-3 rounded-xl"
@@ -45,27 +40,45 @@ export default function LiveJam() {
         </button>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        {chords.map(
-          (chord) => (
-            <button
-              key={chord}
-              onClick={() =>
-                chooseChord(
-                  chord
-                )
-              }
-              className={`rounded-2xl px-4 py-5 font-semibold ${
-                active ===
-                chord
-                  ? "bg-green-600"
-                  : "bg-zinc-900"
-              }`}
-            >
-              {chord}
-            </button>
-          )
-        )}
+      <InstrumentSelector
+        current={inst}
+        onChange={(val) => {
+          setInst(val);
+          setInstrument(val);
+        }}
+      />
+
+      <div className="mb-4 flex gap-2">
+        <button
+          onClick={() => setChordType("english")}
+          className={`px-4 py-2 rounded-xl ${
+            chordType === "english" ? "bg-green-600" : "bg-zinc-700"
+          }`}
+        >
+          English
+        </button>
+        <button
+          onClick={() => setChordType("hindi")}
+          className={`px-4 py-2 rounded-xl ${
+            chordType === "hindi" ? "bg-green-600" : "bg-zinc-700"
+          }`}
+        >
+          Hindi
+        </button>
+      </div>
+
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+        {currentChords.map((chord) => (
+          <button
+            key={chord}
+            onClick={() => chooseChord(chord)}
+            className={`rounded-2xl px-4 py-5 font-semibold ${
+              active === chord ? "bg-green-600" : "bg-zinc-900"
+            }`}
+          >
+            {chord}
+          </button>
+        ))}
       </div>
     </div>
   );

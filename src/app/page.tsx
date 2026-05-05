@@ -14,10 +14,14 @@ import { useSequencer } from "@/hooks/useSequencer";
 import { songs } from "@/data/songs";
 import SongLyrics from "@/components/SongLyrics";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const [mode, setMode] = useState<Mode>("live");
 
   const [selectedSong, setSelectedSong] = useState("");
+
+  const [showHelp, setShowHelp] = useState(false);
 
   const seq = useSequencer();
 
@@ -41,9 +45,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white px-4 py-6 md:px-8">
       <div className="max-w-6xl mx-auto">
-        <Header />
-
-        <UsageGuide />
+        <Header onShowHelp={() => setShowHelp(true)} />
 
         <ModeSwitch mode={mode} setMode={switchMode} />
 
@@ -89,6 +91,26 @@ export default function Home() {
 
         {mode === "live" && <LiveJam />}
       </div>
+
+      {/* Help Modal */}
+      {showHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-zinc-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Usage Guide</h2>
+                <button
+                  onClick={() => setShowHelp(false)}
+                  className="bg-zinc-800 hover:bg-zinc-700 rounded-full w-8 h-8 flex items-center justify-center text-white"
+                >
+                  ×
+                </button>
+              </div>
+              <UsageGuide />
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

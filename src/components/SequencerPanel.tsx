@@ -1,8 +1,32 @@
 import ChordGrid from "@/components/ChordGrid";
 import QueueList from "@/components/QueueList";
-import { GrooveType } from "@/types";
+import InstrumentSelector from "@/components/InstrumentSelector";
+import { GrooveType, InstrumentType, QueueItem } from "@/types";
 
-export default function SequencerPanel(props: any) {
+interface SequencerPanelProps {
+  play: () => void;
+  stop: () => void;
+  playing: boolean;
+  bpm: number;
+  setBpm: (bpm: number) => void;
+  loop: boolean;
+  setLoop: (loop: boolean) => void;
+  groove: GrooveType;
+  setGroove: (groove: GrooveType) => void;
+  instrument: InstrumentType;
+  setInstrument: (instrument: InstrumentType) => void;
+  queue: QueueItem[];
+  activeIndex: number | null;
+  previewChord: (chord: string) => void;
+  moveUp: (index: number) => void;
+  moveDown: (index: number) => void;
+  changeBeats: (index: number, beats: number) => void;
+  removeChord: (index: number) => void;
+  clearQueue: () => void;
+  addChord: (chord: string) => void;
+}
+
+export default function SequencerPanel(props: SequencerPanelProps) {
   const {
     play,
     stop,
@@ -16,6 +40,9 @@ export default function SequencerPanel(props: any) {
 
     groove,
     setGroove,
+
+    instrument,
+    setInstrument,
 
     queue,
     activeIndex,
@@ -96,6 +123,8 @@ export default function SequencerPanel(props: any) {
             <option value="click">Click</option>
           </select>
         </div>
+
+        <InstrumentSelector current={instrument} onChange={setInstrument} />
       </div>
 
       <QueueList

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { GrooveType, QueueItem } from "@/types";
+import { GrooveType, QueueItem, InstrumentType } from "@/types";
 
 import { chordNotes } from "@/data/chordNotes";
 
@@ -11,11 +11,12 @@ import { saveState, loadState } from "@/lib/storage";
 import {
   preloadAudio,
   startAudio,
-  playSustainChord,
   playBass,
   stopAllAudio,
   startGroove,
   stopGroove,
+  playChord,
+  setInstrument,
 } from "@/lib/audio";
 
 export function useSequencer() {
@@ -31,6 +32,8 @@ export function useSequencer() {
 
   const [groove, setGroove] = useState<GrooveType>("pop");
 
+  const [instrument, setInstrumentState] = useState<InstrumentType>("strings");
+
   const stopRef = useRef(false);
 
   const queueRef = useRef(queue);
@@ -41,18 +44,27 @@ export function useSequencer() {
 
   const grooveRef = useRef(groove);
 
+  const instrumentRef = useRef(instrument);
+
   /* ---------- Init ---------- */
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     preloadAudio();
 
     const saved = loadState();
 
     if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQueue(saved.queue);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBpm(saved.bpm);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoop(saved.loop);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setGroove(saved.groove);
+      if (saved.instrument) setInstrumentState(saved.instrument);
     }
   }, []);
 
@@ -74,6 +86,10 @@ export function useSequencer() {
     grooveRef.current = groove;
   }, [groove]);
 
+  useEffect(() => {
+    instrumentRef.current = instrument;
+  }, [instrument]);
+
   /* ---------- Save ---------- */
 
   useEffect(() => {
@@ -82,12 +98,15 @@ export function useSequencer() {
       bpm,
       loop,
       groove,
+      instrument,
     });
-  }, [queue, bpm, loop, groove]);
+  }, [queue, bpm, loop, groove, instrument]);
 
   /* ---------- Groove Live ---------- */
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     if (!playing) return;
 
     stopGroove();
@@ -96,6 +115,14 @@ export function useSequencer() {
       startGroove(groove, bpm);
     }
   }, [groove, bpm, playing]);
+
+  /* ---------- Instrument Live ---------- */
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    setInstrument(instrument);
+  }, [instrument]);
 
   /* ---------- Helpers ---------- */
 
@@ -174,7 +201,7 @@ export function useSequencer() {
     const notes = chordNotes[chord];
 
     if (notes) {
-      playSustainChord(notes);
+      playChord(notes);
     }
   };
 
@@ -215,8 +242,7 @@ export function useSequencer() {
       setActiveIndex(index);
 
       if (notes) {
-        playSustainChord(notes);
-
+        playChord(notes);
         playBass(notes[0], item.beats);
       }
 
@@ -242,6 +268,9 @@ export function useSequencer() {
 
     groove,
     setGroove,
+
+    instrument,
+    setInstrument: setInstrumentState,
 
     playing,
     activeIndex,

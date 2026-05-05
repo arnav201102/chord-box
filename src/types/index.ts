@@ -15,3 +15,5 @@ export type QueueItem = {
   chord: string;
   beats: number;
 };
+
+export type InstrumentType = "strings" | "guitar" | "piano";

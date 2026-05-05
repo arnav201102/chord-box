@@ -1,100 +1,147 @@
 import * as Tone from "tone";
-import { GrooveType } from "@/types";
+import { GrooveType, InstrumentType } from "@/types";
+
+let master: Tone.Gain;
+let eq: Tone.EQ3;
+let reverb: Tone.Reverb;
+let delay: Tone.FeedbackDelay;
+let widener: Tone.StereoWidener;
 
 let started = false;
 
+function buildAudioChain() {
+  if (master) return;
+
+  master = new Tone.Gain(0.9);
+
+  eq = new Tone.EQ3({
+    low: 0,
+    mid: 0,
+    high: -3, // reduce harshness
+  });
+
+  reverb = new Tone.Reverb({
+    decay: 4.5,
+    wet: 0.25, // subtle, not muddy
+  });
+
+  delay = new Tone.FeedbackDelay({
+    delayTime: "8n",
+    feedback: 0.2,
+    wet: 0.1,
+  });
+
+  widener = new Tone.StereoWidener(0.5);
+
+  master.chain(eq, widener, reverb, delay, Tone.Destination);
+}
+
 /* Instruments */
-let pad: Tone.PolySynth | null = null;
-let pluck: Tone.PolySynth | null = null;
 let bass: Tone.MonoSynth | null = null;
 let kick: Tone.MembraneSynth | null = null;
 let snare: Tone.NoiseSynth | null = null;
 let hat: Tone.MetalSynth | null = null;
 
-/* Live hold notes */
-let liveNotes: string[] = [];
+function buildGrooveInstruments() {
+  if (bass) return;
+
+  bass = new Tone.MonoSynth({
+    oscillator: { type: "sawtooth" },
+    envelope: { attack: 0.01, decay: 0.1, sustain: 0.3, release: 0.2 },
+    volume: -12,
+  }).connect(master);
+
+  kick = new Tone.MembraneSynth({
+    pitchDecay: 0.05,
+    octaves: 10,
+    oscillator: { type: "sine" },
+    envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 },
+    volume: -8,
+  }).connect(master);
+
+  snare = new Tone.NoiseSynth({
+    noise: { type: "white" },
+    envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 },
+    volume: -18,
+  }).connect(master);
+
+  hat = new Tone.MetalSynth({
+    envelope: { attack: 0.001, decay: 0.1, release: 0.1 },
+    harmonicity: 5.1,
+    modulationIndex: 32,
+    resonance: 4000,
+    octaves: 1.5,
+    volume: -20,
+  }).connect(master);
+}
+
+/* ---------- Instrument System ---------- */
+
+let currentInstrument: InstrumentType = "strings";
+
+let activeNotes: string[] = [];
+
+/* Gains for crossfade */
+let stringsGain: Tone.Gain;
+let guitarGain: Tone.Gain;
+let pianoGain: Tone.Gain;
+
+/* Instruments */
+let strings: Tone.PolySynth;
+let guitar: Tone.PolySynth;
+let piano: Tone.PolySynth;
 
 function buildInstruments() {
-  if (pad) return;
+  if (strings) return;
 
-  pad = new Tone.PolySynth(Tone.Synth, {
+  /* Gains for crossfade */
+  stringsGain = new Tone.Gain(1).connect(master);
+  guitarGain = new Tone.Gain(0).connect(master);
+  pianoGain = new Tone.Gain(0).connect(master);
+
+  /* Strings (default) */
+  strings = new Tone.PolySynth(Tone.Synth, {
+    oscillator: {
+      type: "fatsawtooth",
+      count: 3,
+      spread: 20,
+    },
+    envelope: {
+      attack: 0.3,
+      decay: 0.2,
+      sustain: 0.8,
+      release: 2,
+    },
+    volume: -8,
+  }).connect(stringsGain);
+
+  /* Guitar */
+  guitar = new Tone.PolySynth(Tone.Synth, {
     oscillator: {
       type: "triangle",
     },
     envelope: {
-      attack: 0.25,
-      decay: 0.2,
-      sustain: 0.8,
-      release: 1.8,
-    },
-    volume: -8,
-  }).toDestination();
-
-  pluck = new Tone.PolySynth(Tone.Synth, {
-    oscillator: {
-      type: "sine",
-    },
-    envelope: {
-      attack: 0.01,
-      decay: 0.15,
-      sustain: 0.15,
-      release: 0.5,
-    },
-    volume: -10,
-  }).toDestination();
-
-  bass = new Tone.MonoSynth({
-    oscillator: {
-      type: "square",
-    },
-    envelope: {
       attack: 0.01,
       decay: 0.2,
-      sustain: 0.3,
+      sustain: 0.1,
       release: 0.8,
     },
-    filterEnvelope: {
-      attack: 0.01,
-      decay: 0.15,
-      sustain: 0,
-      release: 0.2,
-      baseFrequency: 90,
-      octaves: 2,
+    volume: -12,
+  }).connect(guitarGain);
+
+  /* Piano */
+  piano = new Tone.PolySynth(Tone.Synth, {
+    oscillator: {
+      type: "triangle",
+    },
+    envelope: {
+      attack: 0.02,
+      decay: 0.4,
+      sustain: 0.2,
+      release: 1.2,
     },
     volume: -6,
-  }).toDestination();
-
-  kick = new Tone.MembraneSynth({
-    pitchDecay: 0.03,
-    octaves: 6,
-    volume: -2,
-  }).toDestination();
-
-  snare = new Tone.NoiseSynth({
-    noise: {
-      type: "white",
-    },
-    envelope: {
-      attack: 0.001,
-      decay: 0.12,
-      sustain: 0,
-    },
-    volume: -10,
-  }).toDestination();
-
-  hat = new Tone.MetalSynth({
-    // frequency: 220,
-    envelope: {
-      attack: 0.001,
-      decay: 0.05,
-      release: 0.01,
-    },
-    harmonicity: 5.1,
-    modulationIndex: 32,
-    resonance: 2000,
-    octaves: 1.5,
-    volume: -18,
-  }).toDestination();
+  }).connect(pianoGain);
 }
 
 /* ---------- Start ---------- */
@@ -105,11 +152,81 @@ export async function startAudio() {
     started = true;
   }
 
+  buildAudioChain();
   buildInstruments();
+  buildGrooveInstruments();
 }
 
 export async function preloadAudio() {
   await startAudio();
+}
+
+/* ---------- Instrument Switch ---------- */
+
+export function setInstrument(next: InstrumentType) {
+  if (currentInstrument === next) return;
+
+  const fade = 0.25;
+
+  const gains = {
+    strings: stringsGain,
+    guitar: guitarGain,
+    piano: pianoGain,
+  };
+
+  gains[currentInstrument].gain.linearRampTo(0, fade);
+
+  gains[next].gain.linearRampTo(1, fade);
+
+  currentInstrument = next;
+
+  /* re-trigger current chord */
+  if (activeNotes.length) {
+    setTimeout(() => {
+      playChord(activeNotes);
+    }, 50);
+  }
+}
+
+/* ---------- Play ---------- */
+
+export function playChord(notes: string[]) {
+  if (!strings || !guitar || !piano) return;
+  const now = Tone.now();
+
+  activeNotes = notes;
+
+  strings.releaseAll();
+  guitar.releaseAll();
+  piano.releaseAll();
+
+  if (currentInstrument === "strings") {
+    strings.triggerAttack(notes);
+  }
+
+  if (currentInstrument === "piano") {
+    piano.triggerAttackRelease(notes, "2n");
+  }
+
+  if (currentInstrument === "guitar") {
+    notes.forEach((note, i) => {
+      guitar.triggerAttackRelease(
+        note,
+        "8n",
+        now + i * 0.04 + Math.random() * 0.01,
+      );
+    });
+  }
+}
+
+/* ---------- Stop ---------- */
+
+export function stopChord() {
+  strings?.releaseAll();
+  guitar?.releaseAll();
+  piano?.releaseAll();
+
+  activeNotes = [];
 }
 
 /* ---------- Stops ---------- */
@@ -118,13 +235,7 @@ export function stopAllAudio() {
   Tone.Transport.stop();
   Tone.Transport.cancel();
 
-  pad?.releaseAll();
-  pluck?.releaseAll();
-
-  if (liveNotes.length) {
-    pad?.triggerRelease(liveNotes);
-    liveNotes = [];
-  }
+  stopChord();
 }
 
 export function stopGroove() {
@@ -132,40 +243,7 @@ export function stopGroove() {
   Tone.Transport.cancel();
 }
 
-/* ---------- Live Jam ---------- */
-
-export function playLiveChord(notes: string[]) {
-  if (!pad || !pluck) return;
-
-  stopAllAudio();
-
-  liveNotes = notes;
-
-  pluck.triggerAttackRelease(notes, "8n");
-
-  pad.triggerAttack(notes);
-}
-
-export function stopLiveChord() {
-  if (!pad) return;
-
-  if (liveNotes.length) {
-    pad.triggerRelease(liveNotes);
-    liveNotes = [];
-  }
-}
-
 /* ---------- Sequencer ---------- */
-
-export function playSustainChord(notes: string[]) {
-  if (!pad || !pluck) return;
-
-  pad.releaseAll();
-
-  pluck.triggerAttackRelease(notes, "8n");
-
-  pad.triggerAttack(notes);
-}
 
 export function playBass(root: string, beats = 4) {
   if (!bass) return;

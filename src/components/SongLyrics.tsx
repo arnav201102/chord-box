@@ -1,12 +1,58 @@
+import { SongPreset } from "@/types";
+import { useMemo } from "react";
+
 type Props = {
-  lyrics: {
-    chord: string;
-    text: string;
-  }[];
+  song: SongPreset;
 };
 
-export default function SongLyrics({ lyrics }: Props) {
-  if (!lyrics) return null;
+export default function SongLyrics({ song }: Props) {
+  const lyrics = useMemo(() => {
+    if (song.lyrics) return song.lyrics;
+
+    if (!song.sections) return [];
+
+    const sectionMap: Record<string, any> = [];
+    const lyrics: any[] = [];
+
+    for (const section of song.sections) {
+      if (section.ref) {
+        // Repeat referenced section
+        const refSection = sectionMap[section.ref];
+        if (refSection) {
+          for (let i = 0; i < (section.repeat || 1); i++) {
+            lyrics.push(...refSection.lines);
+          }
+        }
+      } else {
+        const sectionLines: any[] = [];
+        if (section.lines) {
+          for (const line of section.lines) {
+            // Extract first chord
+            let firstChord = "C";
+            if (Array.isArray(line.chords) && line.chords.length > 0) {
+              const firstChordObj = line.chords[0];
+              if (typeof firstChordObj === "object" && firstChordObj.chord) {
+                firstChord = firstChordObj.chord;
+              } else if (typeof firstChordObj === "string") {
+                firstChord = firstChordObj;
+              }
+            }
+
+            sectionLines.push({
+              chord: firstChord,
+              text: line.lyrics,
+            });
+          }
+        }
+        sectionMap[section.id] = { lines: sectionLines };
+        lyrics.push(...sectionLines);
+      }
+    }
+
+    return lyrics;
+  }, [song]);
+
+  if (!lyrics.length) return null;
 
   return (
     <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 mt-5">

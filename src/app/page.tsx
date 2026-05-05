@@ -7,6 +7,7 @@ import UsageGuide from "@/components/UsageGuide";
 import ModeSwitch from "@/components/ModeSwitch";
 import SequencerPanel from "@/components/SequencerPanel";
 import LiveJam from "@/components/LiveJam";
+import SongKaraoke from "@/components/SongKaraoke";
 
 import { Mode } from "@/types";
 import { useSequencer } from "@/hooks/useSequencer";
@@ -49,6 +50,46 @@ export default function Home() {
 
         <ModeSwitch mode={mode} setMode={switchMode} />
 
+        {mode === "karaoke" && (
+          <>
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-3">Karaoke Songs</h2>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {Object.keys(songs).map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => loadSong(name)}
+                    className={`rounded-xl px-4 py-3 border ${
+                      selectedSong === name
+                        ? "bg-purple-700 border-purple-400"
+                        : "bg-zinc-900 border-zinc-800"
+                    }`}
+                  >
+                    <div>{name}</div>
+
+                    <div className="text-xs text-zinc-400 mt-1">
+                      {songs[name].bpm} BPM
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {selectedSong && (
+                <div className="mt-4 text-purple-400">
+                  Selected: {selectedSong}
+                </div>
+              )}
+
+              {selectedSong && songs[selectedSong].audioSrc ? (
+                <SongKaraoke song={songs[selectedSong]} />
+              ) : (
+                selectedSong && <SongLyrics song={songs[selectedSong]} />
+              )}
+            </div>
+          </>
+        )}
+
         {mode === "sequencer" && (
           <>
             <div className="mb-6">
@@ -80,9 +121,7 @@ export default function Home() {
                 </div>
               )}
 
-              {selectedSong && (
-                <SongLyrics lyrics={songs[selectedSong].lyrics} />
-              )}
+              {selectedSong && <SongLyrics song={songs[selectedSong]} />}
             </div>
 
             <SequencerPanel {...seq} />

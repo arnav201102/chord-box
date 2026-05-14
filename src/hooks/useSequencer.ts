@@ -155,7 +155,7 @@ export function useSequencer() {
         i === index
           ? {
               ...item,
-              beats: Math.max(1, item.beats + delta),
+              beats: Math.max(1, (item.beats ?? 1) + delta),
             }
           : item,
       ),
@@ -243,10 +243,12 @@ export function useSequencer() {
 
       if (notes) {
         playChord(notes);
-        playBass(notes[0], item.beats);
+        playBass(notes[0], item.beats ?? 1);
       }
 
-      const waitMs = item.beats * beatMs();
+      const waitMs = item.duration
+        ? item.duration * 1000
+        : (item.beats ?? 1) * beatMs();
 
       await new Promise((r) => setTimeout(r, waitMs));
 

@@ -95,9 +95,15 @@ function buildInstruments() {
   if (strings) return;
 
   /* Gains for crossfade */
-  stringsGain = new Tone.Gain(1).connect(master);
-  guitarGain = new Tone.Gain(0).connect(master);
-  pianoGain = new Tone.Gain(0).connect(master);
+  stringsGain = new Tone.Gain(currentInstrument === "strings" ? 1 : 0).connect(
+    master,
+  );
+  guitarGain = new Tone.Gain(currentInstrument === "guitar" ? 1 : 0).connect(
+    master,
+  );
+  pianoGain = new Tone.Gain(currentInstrument === "piano" ? 1 : 0).connect(
+    master,
+  );
 
   /* Strings (default) */
   strings = new Tone.PolySynth(Tone.Synth, {
@@ -166,6 +172,11 @@ export async function preloadAudio() {
 export function setInstrument(next: InstrumentType) {
   if (currentInstrument === next) return;
 
+  if (!stringsGain || !guitarGain || !pianoGain) {
+    currentInstrument = next;
+    return;
+  }
+
   const fade = 0.25;
 
   const gains = {
@@ -175,7 +186,6 @@ export function setInstrument(next: InstrumentType) {
   };
 
   gains[currentInstrument].gain.linearRampTo(0, fade);
-
   gains[next].gain.linearRampTo(1, fade);
 
   currentInstrument = next;

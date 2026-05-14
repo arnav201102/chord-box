@@ -36,7 +36,7 @@ export default function Home() {
 
     seq.stop();
 
-    seq.setQueue(song.queue);
+    seq.setQueue(song.queue ?? []);
 
     seq.setBpm(song.bpm);
 
@@ -92,38 +92,6 @@ export default function Home() {
 
         {mode === "sequencer" && (
           <>
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-3">Song Presets</h2>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {Object.keys(songs).map((name) => (
-                  <button
-                    key={name}
-                    onClick={() => loadSong(name)}
-                    className={`rounded-xl px-4 py-3 border ${
-                      selectedSong === name
-                        ? "bg-green-700 border-green-400"
-                        : "bg-zinc-900 border-zinc-800"
-                    }`}
-                  >
-                    <div>{name}</div>
-
-                    <div className="text-xs text-zinc-400 mt-1">
-                      {songs[name].bpm} BPM
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {selectedSong && (
-                <div className="mt-4 text-green-400">
-                  Selected: {selectedSong}
-                </div>
-              )}
-
-              {selectedSong && <SongLyrics song={songs[selectedSong]} />}
-            </div>
-
             <SequencerPanel {...seq} />
           </>
         )}

@@ -8,70 +8,6 @@ export const songs: Record<string, SongPreset> = {
     key: "Em",
     camelot: "4A",
     duration: "4:22",
-    queue: [
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "G", beats: 4 },
-      { chord: "B7", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "G", beats: 4 },
-      { chord: "B7", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "C", beats: 4 },
-    ],
     sections: [
       {
         type: "verse",
@@ -255,44 +191,44 @@ export const songs: Record<string, SongPreset> = {
         lines: [
           {
             chords: [
-              { chord: "C", beats: 2 },
-              { chord: "Bm", beats: 2 },
+              { chord: "C", duration: 1.276595744680851 },
+              { chord: "Bm", duration: 1.276595744680851 },
             ],
             lyrics: "Tere liye hi jiya main",
           },
           {
             chords: [
-              { chord: "C", beats: 2 },
-              { chord: "Bm", beats: 2 },
+              { chord: "C", duration: 1.276595744680851 },
+              { chord: "Bm", duration: 1.276595744680851 },
             ],
             lyrics: "Khud ko jo yun de diya hai",
           },
           {
             chords: [
-              { chord: "Am", beats: 2 },
-              { chord: "Em", beats: 2 },
+              { chord: "Am", duration: 1.276595744680851 },
+              { chord: "Em", duration: 1.276595744680851 },
             ],
             lyrics: "Teri wafa ne mujhko sambhala",
           },
           {
             chords: [
-              { chord: "Am", beats: 2 },
-              { chord: "Em", beats: 2 },
+              { chord: "Am", duration: 1.276595744680851 },
+              { chord: "Em", duration: 1.276595744680851 },
             ],
             lyrics: "Saare ghamon ko dil se nikala",
           },
           {
             chords: [
-              { chord: "D", beats: 2 },
-              { chord: "G", beats: 2 },
+              { chord: "D", duration: 1.276595744680851 },
+              { chord: "G", duration: 1.276595744680851 },
             ],
             lyrics: "Tere saath mera hai naseeb juda",
           },
           {
             chords: [
-              { chord: "B7", beats: 1 },
-              { chord: "C", beats: 1 },
-              { chord: "D", beats: 2 },
+              { chord: "B7", duration: 0.6382978723404255 },
+              { chord: "C", duration: 0.6382978723404255 },
+              { chord: "D", duration: 1.276595744680851 },
             ],
             lyrics: "Tujhe paake adhoora naa raha",
           },
@@ -309,12 +245,6 @@ export const songs: Record<string, SongPreset> = {
 
   Kesariya: {
     bpm: 92,
-    queue: [
-      { chord: "C", beats: 4 },
-      { chord: "G", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "F", beats: 4 },
-    ],
     lyrics: [
       { chord: "C", text: "Kesariya..." },
       { chord: "G", text: "Tera ishq hai..." },
@@ -325,12 +255,6 @@ export const songs: Record<string, SongPreset> = {
 
   Kabira: {
     bpm: 88,
-    queue: [
-      { chord: "D", beats: 4 },
-      { chord: "A", beats: 4 },
-      { chord: "Bm", beats: 4 },
-      { chord: "G", beats: 4 },
-    ],
     lyrics: [
       { chord: "D", text: "Kaisi teri..." },
       { chord: "A", text: "Khudgarzi..." },
@@ -341,12 +265,6 @@ export const songs: Record<string, SongPreset> = {
 
   ChannaMereya: {
     bpm: 84,
-    queue: [
-      { chord: "G", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-    ],
     lyrics: [
       { chord: "G", text: "Accha chalta hoon..." },
       { chord: "D", text: "Duaon mein..." },
@@ -357,12 +275,6 @@ export const songs: Record<string, SongPreset> = {
 
   Perfect: {
     bpm: 95,
-    queue: [
-      { chord: "G", beats: 4 },
-      { chord: "Em", beats: 4 },
-      { chord: "C", beats: 4 },
-      { chord: "D", beats: 4 },
-    ],
     lyrics: [
       { chord: "G", text: "I found a love..." },
       { chord: "Em", text: "For me..." },
@@ -373,12 +285,6 @@ export const songs: Record<string, SongPreset> = {
 
   Photograph: {
     bpm: 108,
-    queue: [
-      { chord: "E", beats: 4 },
-      { chord: "B", beats: 4 },
-      { chord: "C#m", beats: 4 },
-      { chord: "A", beats: 4 },
-    ],
     lyrics: [
       { chord: "E", text: "Loving can hurt..." },
       { chord: "B", text: "Loving can heal..." },
@@ -389,12 +295,6 @@ export const songs: Record<string, SongPreset> = {
 
   LetHerGo: {
     bpm: 76,
-    queue: [
-      { chord: "C", beats: 4 },
-      { chord: "G", beats: 4 },
-      { chord: "Am", beats: 4 },
-      { chord: "F", beats: 4 },
-    ],
     lyrics: [
       { chord: "C", text: "Well you only..." },
       { chord: "G", text: "Need the light..." },
@@ -405,12 +305,6 @@ export const songs: Record<string, SongPreset> = {
 
   StayWithMe: {
     bpm: 84,
-    queue: [
-      { chord: "A", beats: 4 },
-      { chord: "F#m", beats: 4 },
-      { chord: "D", beats: 4 },
-      { chord: "E", beats: 4 },
-    ],
     lyrics: [
       { chord: "A", text: "Guess it's true..." },
       { chord: "F#m", text: "I'm not good..." },

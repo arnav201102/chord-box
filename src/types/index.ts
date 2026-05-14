@@ -13,20 +13,22 @@ export type GrooveType =
 
 export type QueueItem = {
   chord: string;
-  beats: number;
+  beats?: number;
+  duration?: number;
 };
 
 export type LyricLine = {
   chord: string;
   text: string;
   beats?: number;
+  duration?: number;
   startTime?: number;
 };
 
 export type SectionType = "verse" | "chorus" | "instrumental" | "bridge";
 
 export type SongLine = {
-  chords: { chord: string; beats: number }[];
+  chords: { chord: string; beats?: number; duration?: number }[];
   lyrics: string;
 };
 
@@ -44,13 +46,16 @@ export type Section = {
   ref?: string;
   parts?: (
     | InstrumentalPart
-    | { chords: { chord: string; beats: number }[]; lyrics: string }
+    | {
+        chords: { chord: string; beats?: number; duration?: number }[];
+        lyrics: string;
+      }
   )[];
 };
 
 export type SongPreset = {
   bpm: number;
-  queue: QueueItem[];
+  queue?: QueueItem[];
   lyrics?: LyricLine[];
   sections?: Section[];
   audioSrc?: string;
